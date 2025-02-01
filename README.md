@@ -58,16 +58,16 @@ cd containerized-sports-api
 ```
 ### **Create ECR Repo**
 ```bash
-aws ecr create-repository --repository-name sports-api --region us-east-1
+aws ecr create-repository --repository-name sports-api --region <your-region>
 ```
 
 ### **Authenticate Build and Push the Docker Image**
 ```bash
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
+aws ecr get-login-password --region <your-region> | docker login --username AWS --password-stdin <AWS_ACCOUNT_ID>.dkr.ecr.<your-region>.amazonaws.com
 
 docker build --platform linux/amd64 -t sports-api .
-docker tag sports-api:latest <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sports-api:sports-api-latest
-docker push <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sports-api:sports-api-latest
+docker tag sports-api:latest <AWS_ACCOUNT_ID>.dkr.ecr.<your-region>.amazonaws.com/sports-api:sports-api-latest
+docker push <AWS_ACCOUNT_ID>.dkr.ecr.<your-region>.amazonaws.com/sports-api:sports-api-latest
 ```
 
 ### **Set Up ECS Cluster with Fargate**
@@ -82,7 +82,7 @@ docker push <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sports-api:sports-a
 - For Infrastructure, select Fargate
 - Add the container:
   - Name your container (sports-api-container)
-  - Image URI: <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sports-api:sports-api-latest
+  - Image URI: <AWS_ACCOUNT_ID>.dkr.ecr.<your-region>.amazonaws.com/sports-api:sports-api-latest
   - Container Port: 8080
   - Protocol: TCP
   - Port Name: Leave Blank
@@ -108,8 +108,8 @@ docker push <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sports-api:sports-a
  - Target Group health check path: "/sports"
  - Create service
 4. Test the ALB:
-- After deploying the ECS service, note the DNS name of the ALB (e.g., sports-api-alb-<AWS_ACCOUNT_ID>.us-east-1.elb.amazonaws.com)
-- Confirm the API is accessible by visiting the ALB DNS name in your browser and adding /sports at end (e.g, http://sports-api-alb-<AWS_ACCOUNT_ID>.us-east-1.elb.amazonaws.com/sports)
+- After deploying the ECS service, note the DNS name of the ALB (e.g., sports-api-alb-<AWS_ACCOUNT_ID>.<your-region>.elb.amazonaws.com)
+- Confirm the API is accessible by visiting the ALB DNS name in your browser and adding /sports at end (e.g, http://sports-api-alb-<AWS_ACCOUNT_ID>.<your-region>.elb.amazonaws.com/sports)
 
 ### **Configure API Gateway**
 1. Create a New REST API:
@@ -120,7 +120,7 @@ docker push <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sports-api:sports-a
 - Create a resource /sports
 - Create a GET method
 - Choose HTTP Proxy as the integration type
-- Enter the DNS name of the ALB that includes "/sports" (e.g. http://sports-api-alb-<AWS_ACCOUNT_ID>.us-east-1.elb.amazonaws.com/sports
+- Enter the DNS name of the ALB that includes "/sports" (e.g. http://sports-api-alb-<AWS_ACCOUNT_ID>.<your-region>.elb.amazonaws.com/sports
 
 3. Deploy the API:
 - Deploy the API to a stage (e.g., prod)
@@ -129,7 +129,7 @@ docker push <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sports-api:sports-a
 ### **Test the System**
 - Use curl or a browser to test:
 ```bash
-curl https://<api-gateway-id>.execute-api.us-east-1.amazonaws.com/prod/sports
+curl https://<api-gateway-id>.execute-api.<your-region>.amazonaws.com/prod/sports
 ```
 
 ### **What We Learned**
